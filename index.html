@@ -2,7 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>БИО ПЕРСОНАЖА</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dossier OS | ASTA</title>
     <style>
         :root {
             --accent: #bc13fe; 
@@ -24,13 +25,12 @@
             border-radius: 10px;
             box-shadow: 0 0 10px var(--accent);
         }
-        /* Для Firefox */
         * { scrollbar-width: thin; scrollbar-color: var(--accent) rgba(0,0,0,0.2); }
 
         body {
             margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center;
             font-family: -apple-system, system-ui, sans-serif;
-            background: #09081a; color: white; overflow: hidden;
+            background: #000; color: white; overflow: hidden;
             background-repeat: no-repeat;
             background-size: var(--bg-zoom);
             background-position: center var(--bg-pos);
@@ -101,7 +101,14 @@
         .stat-box { background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); }
         .stat-label { font-size: 8px; color: var(--accent); text-transform: uppercase; display: block; opacity: 0.8; }
         .stat-val { font-size: 12px; font-weight: bold; color: white; outline: none; }
-        .del-skill { position: absolute; top: 10px; right: 15px; z-index: 2; cursor: pointer; opacity: 0.3; transition: 0.2s; }
+        
+        /* СКРЫТИЕ ЭЛЕМЕНТОВ УПРАВЛЕНИЯ */
+        .admin-only { display: none !important; }
+        body.is-admin .admin-only { display: flex !important; }
+        body.is-admin .admin-only.btn { display: inline-block !important; }
+
+        .del-skill { position: absolute; top: 10px; right: 15px; z-index: 2; cursor: pointer; opacity: 0.3; transition: 0.2s; display: none; }
+        body.is-admin .del-skill { display: block; }
         .del-skill:hover { opacity: 1; color: #ff4444; }
 
         .player-wrap { margin-top: auto; background: rgba(0,0,0,0.3); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); position: relative; }
@@ -137,16 +144,16 @@
             <div style="position: absolute; top: 20px; right: 25px; cursor: pointer; font-size: 24px;" onclick="closeSkills()">✕</div>
             <h2 style="text-align:center; color: var(--accent); text-transform: uppercase; letter-spacing: 2px;">Навыки и Способности</h2>
             
-            <input type="text" id="skill-search" class="skill-search-box" placeholder="Поиск навыка по названию..." oninput="renderSkills()" spellcheck="false">
+            <input type="text" id="skill-search" class="skill-search-box" placeholder="Поиск навыка..." oninput="renderSkills()" spellcheck="false">
 
             <div id="skills-list"></div>
-            <button class="btn" style="width:100%; margin-top:20px; padding: 15px; border-color: var(--accent);" onclick="addSkillPrompt()">+ ДОБАВИТЬ НОВУЮ СПОСОБНОСТЬ</button>
+            <button class="btn admin-only" style="width:100%; margin-top:20px; padding: 15px; border-color: var(--accent);" onclick="addSkillPrompt()">+ ДОБАВИТЬ НОВУЮ СПОСОБНОСТЬ</button>
             <input type="file" id="skill-file-in" hidden accept="image/*" onchange="handleSkillFile(this)">
         </div>
     </div>
 
-    <div class="fx-toggle" onclick="document.querySelector('.fx-panel').classList.toggle('open')">⚙️</div>
-    <div class="fx-panel">
+    <div class="fx-toggle admin-only" onclick="document.querySelector('.fx-panel').classList.toggle('open')">⚙️</div>
+    <div class="fx-panel admin-only">
         <div class="row"><label>Размытие фона</label><input type="range" id="sbb" min="0" max="60" oninput="upd('blur-bg', this.value+'px')"></div>
         <div class="row"><label>Масштаб фона</label><input type="range" id="bz" min="50" max="300" oninput="upd('bg-zoom', this.value+'%')"></div>
         <div class="row"><label>Позиция фона</label><input type="range" id="bp" min="0" max="100" oninput="upd('bg-pos', this.value+'%')"></div>
@@ -162,18 +169,18 @@
     </div>
 
     <div class="top-nav">
-        <button class="btn" onclick="togglePlayer()" id="player-toggle">🎵 ПЛЕЕР</button>
-        <button class="btn" style="border-color: var(--accent);" onclick="document.getElementById('m-in').click()">+ ТРЕК</button>
-        <button class="btn" onclick="document.getElementById('in').click()">ФОН</button>
-        <button class="btn" onclick="toggleEdit()" id="eb">✎ ПРАВКА</button>
+        <button class="btn admin-only" onclick="togglePlayer()" id="player-toggle">🎵 ПЛЕЕР</button>
+        <button class="btn admin-only" style="border-color: var(--accent);" onclick="document.getElementById('m-in').click()">+ ТРЕК</button>
+        <button class="btn admin-only" onclick="document.getElementById('in').click()">ФОН</button>
+        <button class="btn admin-only" onclick="toggleEdit()" id="eb">✎ ПРАВКА</button>
         <input type="file" id="in" hidden onchange="setBg(this)">
         <input type="file" id="m-in" hidden multiple accept="audio/*" onchange="addMusic(this)">
     </div>
 
     <div class="card" id="card">
         <div id="clock" style="font-size: 11px; opacity: 0.4; margin-bottom: 5px;">00:00</div>
-        <h1 id="n" spellcheck="false">ВАРНЕР</h1>
-        <div class="role" id="r" spellcheck="false">ВЛАДЫКА СОБЫТИЙ</div>
+        <h1 id="n" spellcheck="false">ASTA</h1>
+        <div class="role" id="r" spellcheck="false">МАГИЧЕСКИЙ РЫЦАРЬ</div>
         
         <nav class="nav-tabs">
             <button class="tab-btn active" onclick="setTab('i', this)">Инфо</button>
@@ -185,24 +192,45 @@
         
         <div class="player-wrap" id="player-block">
             <div id="playlist" class="playlist-window"></div>
-            <div class="t-name" id="t-name">Добавьте треки</div>
+            <div class="t-name" id="t-name">Треки отсутствуют</div>
             <div class="p-btns">
                 <button class="p-btn" onclick="prev()">⏮</button>
                 <button class="p-btn" id="p-p" onclick="tPlay()">▶</button>
                 <button class="p-btn" onclick="next()">⏭</button>
-                <button class="p-btn" onclick="document.getElementById('playlist').classList.toggle('open')">☰</button>
-                <input type="range" class="vol" min="0" max="1" step="0.1" value="0.5" oninput="audio.volume = this.value">
+                <button class="p-btn admin-only" onclick="document.getElementById('playlist').classList.toggle('open')">☰</button>
+                <input type="range" class="vol admin-only" min="0" max="1" step="0.1" value="0.5" oninput="audio.volume = this.value">
             </div>
         </div>
     </div>
 
     <script>
+        // ПРОВЕРКА ПРАВ (admin=1 в ссылке)
+        const isAdmin = new URLSearchParams(window.location.search).get('admin') === '1';
+        if(isAdmin) document.body.classList.add('is-admin');
+
         const audio = new Audio();
         let list = []; let cur = 0;
         let currentTab = 'i';
         let skillTargetIdx = -1;
 
-        let skillsDB = JSON.parse(localStorage.getItem('os_skills')) || [{ title: "Антимагия", desc: "Сводит на нет магию.", img: "", cd: "10", vd: "5", zv: "20" }];
+        // --- ТВОИ СОХРАНЕННЫЕ ДАННЫЕ ---
+        let db = { 
+            n: "ASTA", 
+            r: "МАГИЧЕСКИЙ РЫЦАРЬ", 
+            i: "• Антимагия\n• Пятилистный Гримуар\n• Не сдаваться - моя магия!", 
+            s: "Сила: 100\nМагия: 0\nДух: 80" 
+        };
+
+        let skillsDB = [
+            { title: "Гримуар", desc: "Пятилистный клевер. Дает доступ к антимагическим мечам.", img: "https://i.pinimg.com/736x/21/5d/21/215d216503b4169543e34360e572095a.jpg", cd: "0", vd: "∞", zv: "100" },
+            { title: "Черная форма", desc: "Покрытие тела антимагией. Увеличивает силу и скорость.", img: "https://i.ytimg.com/vi/1X_m1y5yL7g/maxresdefault.jpg", cd: "30", vd: "5", zv: "50" }
+        ];
+
+        // Загрузка из локальной памяти (если есть)
+        let savedDb = JSON.parse(localStorage.getItem('os_db_v3'));
+        if(savedDb) db = savedDb;
+        let savedSkills = JSON.parse(localStorage.getItem('os_skills'));
+        if(savedSkills) skillsDB = savedSkills;
 
         function openSkills() { renderSkills(); const m = document.getElementById('skills-modal'); m.style.display = 'flex'; setTimeout(()=>m.classList.add('open'),10); }
         function closeSkills() { const m = document.getElementById('skills-modal'); m.classList.remove('open'); setTimeout(()=>m.style.display='none',300); }
@@ -219,22 +247,22 @@
                     <div class="skill-item" style="background-image: url(${s.img})">
                         <div class="del-skill" onclick="deleteSkill(${i})">✕</div>
                         
-                        <div class="move-btns">
+                        <div class="move-btns admin-only">
                             <button class="m-btn" onclick="moveSkill(${i}, -1)">▲</button>
                             <button class="m-btn" onclick="moveSkill(${i}, 1)">▼</button>
                         </div>
 
-                        <div class="skill-img-wrap" onclick="triggerSkillFile(${i})">
+                        <div class="skill-img-wrap" onclick="${isAdmin ? `triggerSkillFile(${i})` : ''}">
                             <img src="${s.img}" class="skill-img" style="display: ${s.img ? 'block' : 'none'}">
                         </div>
                         <div class="skill-info">
-                            <h3 contenteditable="true" spellcheck="false" onblur="editSkill(${i}, 'title', this.innerText)">${s.title}</h3>
-                            <p contenteditable="true" spellcheck="false" onblur="editSkill(${i}, 'desc', this.innerText)">${s.desc}</p>
+                            <h3 contenteditable="${isAdmin}" spellcheck="false" onblur="editSkill(${i}, 'title', this.innerText)">${s.title}</h3>
+                            <p contenteditable="${isAdmin}" spellcheck="false" onblur="editSkill(${i}, 'desc', this.innerText)">${s.desc}</p>
                         </div>
                         <div class="skill-stats">
-                            <div class="stat-box"><span class="stat-label">КД</span><div class="stat-val" contenteditable="true" spellcheck="false" onblur="editSkill(${i}, 'cd', this.innerText)">${s.cd}</div><span style="font-size:7px; opacity:0.6;">МИН.</span></div>
-                            <div class="stat-box"><span class="stat-label">ВД</span><div class="stat-val" contenteditable="true" spellcheck="false" onblur="editSkill(${i}, 'vd', this.innerText)">${s.vd}</div><span style="font-size:7px; opacity:0.6;">МИН.</span></div>
-                            <div class="stat-box"><span class="stat-label">ЗВ</span><div class="stat-val" contenteditable="true" spellcheck="false" onblur="editSkill(${i}, 'zv', this.innerText)">${s.zv}</div><span style="font-size:7px; opacity:0.6;">%</span></div>
+                            <div class="stat-box"><span class="stat-label">КД</span><div class="stat-val" contenteditable="${isAdmin}" onblur="editSkill(${i}, 'cd', this.innerText)">${s.cd}</div><span style="font-size:7px; opacity:0.6;">МИН.</span></div>
+                            <div class="stat-box"><span class="stat-label">ВД</span><div class="stat-val" contenteditable="${isAdmin}" onblur="editSkill(${i}, 'vd', this.innerText)">${s.vd}</div><span style="font-size:7px; opacity:0.6;">МИН.</span></div>
+                            <div class="stat-box"><span class="stat-label">ЗВ</span><div class="stat-val" contenteditable="${isAdmin}" onblur="editSkill(${i}, 'zv', this.innerText)">${s.zv}</div><span style="font-size:7px; opacity:0.6;">%</span></div>
                         </div>
                     </div>`;
             });
@@ -259,7 +287,7 @@
         function addSkillPrompt() { skillsDB.push({ title: "НОВЫЙ НАВЫК", desc: "Описание...", img: "", cd: "0", vd: "0", zv: "0" }); renderSkills(); saveSkills(); }
         function editSkill(i, k, v) { skillsDB[i][k] = v; saveSkills(); }
         function deleteSkill(i) { if(confirm("Удалить?")) { skillsDB.splice(i, 1); renderSkills(); saveSkills(); } }
-        function saveSkills() { localStorage.setItem('os_skills', JSON.stringify(skillsDB)); }
+        function saveSkills() { if(isAdmin) localStorage.setItem('os_skills', JSON.stringify(skillsDB)); }
 
         function addMusic(input) {
             Array.from(input.files).forEach(f => list.push({ name: f.name.split('.')[0], url: URL.createObjectURL(f) }));
@@ -282,10 +310,9 @@
         setInterval(updateClock, 1000); updateClock();
 
         let isE = false;
-        let db = JSON.parse(localStorage.getItem('os_db_v3')) || { n: "ВАРНЕР", r: "ВЛАДЫКА СОБЫТИЙ", i: "Общая информация...", s: "Статы..." };
         let cfg = JSON.parse(localStorage.getItem('os_cfg')) || { accent: '#bc13fe', glass_hex: '#ffffff', 'card-w': '450px', 'card-h': '620px', radius: '40px', neon: true, 'blur-card': '30px', 'blur-bg': '0px', 'bg-zoom': '100%', 'bg-pos': '50%', showPlayer: true };
 
-        function save() { localStorage.setItem('os_db_v3', JSON.stringify(db)); localStorage.setItem('os_cfg', JSON.stringify(cfg)); }
+        function save() { if(isAdmin) { localStorage.setItem('os_db_v3', JSON.stringify(db)); localStorage.setItem('os_cfg', JSON.stringify(cfg)); } }
 
         function upd(p, v) { document.documentElement.style.setProperty('--' + p, v); cfg[p] = v; save(); }
         function updGlass(hex) { const r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16); const rgba = `rgba(${r}, ${g}, ${b}, 0.1)`; document.documentElement.style.setProperty('--glass', rgba); cfg.glass_hex = hex; save(); }
@@ -296,19 +323,21 @@
         function load() {
             Object.keys(cfg).forEach(k => { if(!['neon','glass_hex','showPlayer'].includes(k)) document.documentElement.style.setProperty('--'+k, cfg[k]); });
             updGlass(cfg.glass_hex);
-            if(cfg.neon) { document.getElementById('card').classList.add('neon'); document.getElementById('sn').checked = true; }
-            document.getElementById('cp').value = cfg.accent;
-            document.getElementById('cg_pick').value = cfg.glass_hex;
+            if(cfg.neon) { document.getElementById('card').classList.add('neon'); if(isAdmin) document.getElementById('sn').checked = true; }
+            if(isAdmin) { document.getElementById('cp').value = cfg.accent; document.getElementById('cg_pick').value = cfg.glass_hex; }
             applyPlayerState();
             document.getElementById('n').innerText = db.n; document.getElementById('r').innerText = db.r;
             document.getElementById('out').innerText = db[currentTab] || "";
-            ['sw','sh','sr','sb','sbb','bz','bp'].forEach(id => {
-                let k = id==='sw'?'card-w':id==='sh'?'card-h':id==='sr'?'radius':id==='sb'?'blur-card':id==='sbb'?'blur-bg':id==='bz'?'bg-zoom':'bg-pos';
-                document.getElementById(id).value = parseInt(cfg[k]);
-            });
+            if(isAdmin) {
+                ['sw','sh','sr','sb','sbb','bz','bp'].forEach(id => {
+                    let k = id==='sw'?'card-w':id==='sh'?'card-h':id==='sr'?'radius':id==='sb'?'blur-card':id==='sbb'?'blur-bg':id==='bz'?'bg-zoom':'bg-pos';
+                    document.getElementById(id).value = parseInt(cfg[k]);
+                });
+            }
         }
 
         function toggleEdit() {
+            if(!isAdmin) return;
             isE = !isE; document.querySelectorAll('#n, #r, #out').forEach(el => el.contentEditable = isE);
             document.getElementById('eb').innerText = isE ? "✔ ОК" : "✎ ПРАВКА";
             if(!isE) { db.n = document.getElementById('n').innerText; db.r = document.getElementById('r').innerText; db[currentTab] = document.getElementById('out').innerText; save(); }
@@ -317,7 +346,7 @@
         function setTab(t, b) { if(isE) return; currentTab = t; document.getElementById('out').innerText = db[t] || ""; document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); b.classList.add('active'); }
         function setBg(i) { const r = new FileReader(); r.onload = e => { document.body.style.backgroundImage = `url(${e.target.result})`; localStorage.setItem('os_bg', e.target.result); }; r.readAsDataURL(i.files[0]); }
         const sBg = localStorage.getItem('os_bg'); if(sBg) document.body.style.backgroundImage = `url(${sBg})`;
-        function resetData() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
+        function resetData() { if(isAdmin && confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
         load();
     </script>
 </body>
