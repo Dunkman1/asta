@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dossier OS | ASTA</title>
+    <title>БИО ПЕРСОНАЖА | ASTA</title>
     <style>
         :root {
             --accent: #bc13fe; 
@@ -18,37 +18,28 @@
         }
 
         /* КРАСИВЫЙ СКРОЛЛБАР */
-        *::-webkit-scrollbar { width: 4px; height: 4px; }
+        *::-webkit-scrollbar { width: 4px; }
         *::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 10px; }
-        *::-webkit-scrollbar-thumb { 
-            background: var(--accent); 
-            border-radius: 10px;
-            box-shadow: 0 0 10px var(--accent);
-        }
-        * { scrollbar-width: thin; scrollbar-color: var(--accent) rgba(0,0,0,0.2); }
+        *::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; box-shadow: 0 0 10px var(--accent); }
 
         body {
             margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center;
             font-family: -apple-system, system-ui, sans-serif;
             background: #000; color: white; overflow: hidden;
-            background-repeat: no-repeat;
-            background-size: var(--bg-zoom);
-            background-position: center var(--bg-pos);
+            background-repeat: no-repeat; background-size: var(--bg-zoom); background-position: center var(--bg-pos);
         }
 
-        .bg-layer { position: absolute; inset: 0; backdrop-filter: blur(var(--blur-bg)); -webkit-backdrop-filter: blur(var(--blur-bg)); z-index: -1; }
+        .bg-layer { position: absolute; inset: 0; backdrop-filter: blur(var(--blur-bg)); z-index: -1; }
         .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); z-index: -2; }
         .footer { position: fixed; bottom: 15px; right: 20px; font-size: 11px; color: rgba(255,255,255,0.2); pointer-events: none; }
 
         .card {
-            background: var(--glass); backdrop-filter: blur(var(--blur-card)); -webkit-backdrop-filter: blur(var(--blur-card));
+            background: var(--glass); backdrop-filter: blur(var(--blur-card));
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius);
             padding: 40px; width: var(--card-w); height: var(--card-h);
-            text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            transition: 0.3s; position: relative; display: flex; flex-direction: column;
-            box-sizing: border-box;
+            text-align: center; box-shadow: 0 0 40px -10px var(--accent);
+            position: relative; display: flex; flex-direction: column; box-sizing: border-box;
         }
-        .card.neon { box-shadow: 0 0 40px -10px var(--accent) !important; }
 
         h1 { font-size: 3rem; margin: 5px 0; text-transform: uppercase; text-shadow: 0 0 15px var(--accent); outline: none; }
         .role { color: var(--accent); text-transform: uppercase; letter-spacing: 3px; font-size: 13px; margin-bottom: 20px; outline: none; }
@@ -57,7 +48,7 @@
         .tab-btn { flex: 1; background: transparent; border: none; color: white; opacity: 0.6; padding: 10px 2px; border-radius: 12px; cursor: pointer; font-size: 10px; text-transform: uppercase; font-weight: bold; }
         .tab-btn.active { background: var(--accent); opacity: 1; color: white; }
 
-        .display { flex-grow: 1; overflow-y: auto; font-size: 15px; line-height: 1.6; text-align: left; margin-bottom: 10px; white-space: pre-wrap; outline: none; padding-right: 5px; }
+        .display { flex-grow: 1; overflow-y: auto; font-size: 15px; line-height: 1.6; text-align: left; margin-bottom: 10px; white-space: pre-wrap; outline: none; }
 
         #skills-modal {
             position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px);
@@ -66,76 +57,56 @@
         #skills-modal.open { display: flex; opacity: 1; }
         .skills-content {
             background: #111; border: 1px solid var(--accent); border-radius: 35px;
-            width: 90%; max-width: 800px; max-height: 85vh; padding: 40px; overflow-y: auto;
-            position: relative; box-shadow: 0 0 50px rgba(0,0,0,1);
+            width: 90%; max-width: 800px; max-height: 85vh; padding: 40px; overflow-y: auto; position: relative;
         }
         
-        .skill-search-box {
-            width: 100%; padding: 12px 20px; margin-bottom: 20px;
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px; color: white; outline: none; box-sizing: border-box;
-            transition: 0.3s; font-size: 14px;
-        }
-
         .skill-item {
             display: flex; align-items: center; gap: 20px; background: rgba(255,255,255,0.03);
             padding: 20px; border-radius: 25px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); 
-            transition: 0.3s; position: relative; overflow: hidden;
-            background-size: cover; background-position: center;
+            position: relative; overflow: hidden; background-size: cover; background-position: center;
         }
-        .skill-item::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.65); z-index: 0; }
+        .skill-item::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.7); z-index: 0; }
         
-        /* СКРЫТИЕ ДЛЯ ОБЫЧНЫХ ПОЛЬЗОВАТЕЛЕЙ */
-        .admin-only { display: none !important; }
-        body.is-admin .admin-only { display: flex !important; }
-        body.is-admin .admin-only.btn { display: inline-block !important; }
-
-        .skill-img-wrap { position: relative; z-index: 1; width: 80px; height: 80px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; overflow: hidden; }
+        .skill-img-wrap { position: relative; z-index: 1; width: 80px; height: 80px; flex-shrink: 0; border-radius: 20px; overflow: hidden; }
         .skill-img { width: 100%; height: 100%; object-fit: cover; }
         .skill-info { position: relative; z-index: 1; flex-grow: 1; }
         .skill-info h3 { margin: 0; font-size: 20px; color: var(--accent); text-transform: uppercase; }
-        .skill-info p { margin: 8px 0 0; font-size: 14px; opacity: 0.8; line-height: 1.4; }
-        .skill-stats { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 6px; text-align: right; min-width: 120px; }
+        .skill-info p { margin: 8px 0 0; font-size: 13px; opacity: 0.8; line-height: 1.4; }
+        .skill-stats { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 6px; text-align: right; min-width: 100px; }
         .stat-box { background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); }
-        .stat-label { font-size: 8px; color: var(--accent); text-transform: uppercase; display: block; opacity: 0.8; }
-        .stat-val { font-size: 12px; font-weight: bold; color: white; outline: none; }
+        .stat-label { font-size: 8px; color: var(--accent); text-transform: uppercase; display: block; }
+        .stat-val { font-size: 11px; font-weight: bold; color: white; }
 
-        .player-wrap { margin-top: auto; background: rgba(0,0,0,0.3); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); position: relative; }
-        .t-name { font-size: 10px; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; overflow: hidden; white-space: nowrap; text-align: center; }
+        .player-wrap { margin-top: auto; background: rgba(0,0,0,0.3); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .t-name { font-size: 10px; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; text-align: center; }
         .p-btns { display: flex; align-items: center; justify-content: center; gap: 12px; }
-        .p-btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; opacity: 0.7; transition: 0.2s; }
 
-        .fx-panel { position: fixed; top: 20px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.95); padding: 25px; border-radius: 24px; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 12px; width: 280px; transform: translateX(-150%); transition: 0.4s; }
-        .fx-panel.open { transform: translateX(0); }
-        .fx-toggle { position: fixed; top: 25px; left: 25px; z-index: 1001; cursor: pointer; font-size: 24px; opacity: 0.5; }
-        .top-nav { position: fixed; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000; }
-        .btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px 18px; border-radius: 20px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        /* СКРЫТИЕ ПАНЕЛЕЙ */
+        .admin-ui { display: none !important; }
+        body.is-admin .admin-ui { display: block !important; }
     </style>
 </head>
 <body id="body">
     <div class="bg-layer"></div>
     <div class="overlay"></div>
+    <div class="footer">by ryzen_qq</div>
 
     <div id="skills-modal">
         <div class="skills-content">
             <div style="position: absolute; top: 20px; right: 25px; cursor: pointer; font-size: 24px;" onclick="closeSkills()">✕</div>
             <h2 style="text-align:center; color: var(--accent); text-transform: uppercase; letter-spacing: 2px;">Навыки и Способности</h2>
-            <input type="text" id="skill-search" class="skill-search-box" placeholder="Поиск навыка..." oninput="renderSkills()" spellcheck="false">
             <div id="skills-list"></div>
         </div>
     </div>
 
-    <div class="fx-toggle admin-only" onclick="document.querySelector('.fx-panel').classList.toggle('open')">⚙️</div>
-    <div class="fx-panel admin-only">
-        <div style="font-size: 10px; margin-bottom: 10px; color: var(--accent);">ADMIN MODE</div>
-        <button class="btn" onclick="localStorage.clear(); location.reload();" style="width:100%">ОЧИСТИТЬ ПАМЯТЬ (ASTA RESET)</button>
-        <button class="btn" onclick="toggleEdit()" id="eb" style="width:100%; margin-top: 10px;">✎ ПРАВКА</button>
+    <div class="admin-ui" style="position:fixed; top:10px; left:10px; z-index:9999;">
+        <button onclick="localStorage.clear(); location.reload();" style="background:red; color:white; border:none; padding:10px; cursor:pointer; border-radius:10px;">СБРОСИТЬ КЭШ</button>
     </div>
 
     <div class="card" id="card">
         <div id="clock" style="font-size: 11px; opacity: 0.4; margin-bottom: 5px;">00:00</div>
-        <h1 id="n">ASTA</h1>
-        <div class="role" id="r">МАГИЧЕСКИЙ РЫЦАРЬ</div>
+        <h1>ASTA</h1>
+        <div class="role">МАГИЧЕСКИЙ РЫЦАРЬ</div>
         
         <nav class="nav-tabs">
             <button class="tab-btn active" onclick="setTab('i', this)">Инфо</button>
@@ -143,104 +114,69 @@
             <button class="tab-btn" onclick="openSkills()">Навыки</button>
         </nav>
 
-        <div class="display" id="out" spellcheck="false"></div>
+        <div class="display" id="out"></div>
         
         <div class="player-wrap">
-            <div class="t-name">air-siren-raid...</div>
+            <div class="t-name">Треки отсутствуют</div>
             <div class="p-btns">
-                <button class="p-btn">⏮</button>
-                <button class="p-btn">▶</button>
-                <button class="p-btn">⏭</button>
+                <span style="font-size:18px; opacity:0.5;">⏮ ▶ ⏭</span>
             </div>
         </div>
     </div>
 
     <script>
-        // ДАННЫЕ АСТЫ
-        const defaultDb = {
-            n: "ASTA",
-            r: "МАГИЧЕСКИЙ РЫЦАРЬ",
+        // ДАННЫЕ ВШИТЫ В КОД
+        const astaData = {
             i: "• Антимагия\n• Пятилистный Гримуар\n• Не сдаваться - моя магия!",
             s: "Сила: 100\nМагия: 0\nДух: 80"
         };
 
-        const defaultSkills = [
-            { title: "ГРИМУАР", desc: "Пятилистный клевер. Дает доступ к антимагическим мечам.", img: "https://i.pinimg.com/736x/21/5d/21/215d216503b4169543e34360e572095a.jpg", cd: "0", vd: "∞", zv: "100" },
-            { title: "ЧЕРНАЯ ФОРМА", desc: "Покрытие тела антимагией. Увеличивает силу и скорость.", img: "https://i.ytimg.com/vi/1X_m1y5yL7g/maxresdefault.jpg", cd: "30", vd: "5", zv: "50" }
+        const astaSkills = [
+            { title: "ГРИМУАР", desc: "Вы имеете гримуар, прочность - 100.000. Дает +50% к силе.", img: "https://i.pinimg.com/736x/21/5d/21/215d216503b4169543e34360e572095a.jpg", cd: "0", vd: "∞", zv: "100" },
+            { title: "DEMON-DWELLER SWORD", desc: "Урон +70% от силы. Лишает магию её сил на 20%.", img: "https://static.wikia.nocookie.net/blackclover/images/2/2e/Demon-Dweller_Sword.png", cd: "0", vd: "0", zv: "0" }
         ];
 
+        // Проверка админа через ?admin=1
         const isAdmin = new URLSearchParams(window.location.search).get('admin') === '1';
         if(isAdmin) document.body.classList.add('is-admin');
 
-        let currentTab = 'i';
-        let isE = false;
-
-        // Принудительно ставим Асту, если в памяти старый мусор
-        if(!localStorage.getItem('v4_init')) {
-            localStorage.clear();
-            localStorage.setItem('v4_init', 'true');
-        }
-
-        let db = JSON.parse(localStorage.getItem('os_db_v4')) || defaultDb;
-        let skillsDB = JSON.parse(localStorage.getItem('os_skills_v4')) || defaultSkills;
-
         function setTab(t, b) {
-            if(isE) return;
-            currentTab = t;
-            document.getElementById('out').innerText = db[t];
+            document.getElementById('out').innerText = astaData[t];
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             b.classList.add('active');
         }
 
-        function openSkills() { renderSkills(); document.getElementById('skills-modal').style.display = 'flex'; setTimeout(()=>document.getElementById('skills-modal').classList.add('open'),10); }
-        function closeSkills() { document.getElementById('skills-modal').classList.remove('open'); setTimeout(()=>document.getElementById('skills-modal').style.display='none',300); }
-
-        function renderSkills() {
+        function openSkills() { 
             const container = document.getElementById('skills-list');
-            const query = document.getElementById('skill-search').value.toLowerCase();
             container.innerHTML = '';
-            skillsDB.forEach((s) => {
-                if(!s.title.toLowerCase().includes(query)) return;
+            astaSkills.forEach(s => {
                 container.innerHTML += `
                     <div class="skill-item" style="background-image: url(${s.img})">
                         <div class="skill-img-wrap"><img src="${s.img}" class="skill-img"></div>
-                        <div class="skill-info">
-                            <h3>${s.title}</h3>
-                            <p>${s.desc}</p>
-                        </div>
+                        <div class="skill-info"><h3>${s.title}</h3><p>${s.desc}</p></div>
                         <div class="skill-stats">
-                            <div class="stat-box"><span class="stat-label">КД</span><div class="stat-val">${s.cd}</div><span style="font-size:7px; opacity:0.6;">МИН.</span></div>
-                            <div class="stat-box"><span class="stat-label">ВД</span><div class="stat-val">${s.vd}</div><span style="font-size:7px; opacity:0.6;">МИН.</span></div>
-                            <div class="stat-box"><span class="stat-label">ЗВ</span><div class="stat-val">${s.zv}</div><span style="font-size:7px; opacity:0.6;">%</span></div>
+                            <div class="stat-box"><span class="stat-label">КД</span><div class="stat-val">${s.cd} мин.</div></div>
+                            <div class="stat-box"><span class="stat-label">ВД</span><div class="stat-val">${s.vd} мин.</div></div>
+                            <div class="stat-box"><span class="stat-label">ЗВ</span><div class="stat-val">${s.zv} %</div></div>
                         </div>
                     </div>`;
             });
+            document.getElementById('skills-modal').style.display = 'flex'; 
+            setTimeout(()=>document.getElementById('skills-modal').classList.add('open'), 10); 
         }
 
-        function toggleEdit() {
-            isE = !isE;
-            document.querySelectorAll('#n, #r, #out').forEach(el => el.contentEditable = isE);
-            document.getElementById('eb').innerText = isE ? "✔ СОХРАНИТЬ" : "✎ ПРАВКА";
-            if(!isE) {
-                db.n = document.getElementById('n').innerText;
-                db.r = document.getElementById('r').innerText;
-                db[currentTab] = document.getElementById('out').innerText;
-                localStorage.setItem('os_db_v4', JSON.stringify(db));
-            }
+        function closeSkills() { 
+            document.getElementById('skills-modal').classList.remove('open'); 
+            setTimeout(()=>document.getElementById('skills-modal').style.display='none', 300); 
         }
 
-        // Часы
+        // Время и запуск
         setInterval(() => {
             const n = new Date();
             document.getElementById('clock').innerText = String(n.getHours()).padStart(2,'0')+":"+String(n.getMinutes()).padStart(2,'0');
         }, 1000);
 
-        window.onload = () => {
-            document.getElementById('n').innerText = db.n;
-            document.getElementById('r').innerText = db.r;
-            document.getElementById('out').innerText = db[currentTab];
-            if(isAdmin) document.getElementById('card').classList.add('neon');
-        };
+        window.onload = () => { setTab('i', document.querySelector('.tab-btn')); };
     </script>
 </body>
 </html>
